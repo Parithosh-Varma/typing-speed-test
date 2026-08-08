@@ -209,8 +209,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground" onKeyDown={handleKeyDown}>
-      <header className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border bg-card">
+    <div className="min-h-screen bg-background text-foreground flex flex-col" onKeyDown={handleKeyDown}>
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 sm:px-8 py-4 border-b border-border bg-card">
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-full object-cover border border-border shadow-sm" />
           <h1 className="text-lg font-semibold tracking-tight">Typing Speed Test</h1>
@@ -239,19 +239,19 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Test Your Speed</h2>
-          <p className="text-muted-foreground text-base sm:text-lg">See how fast you can type. Press <kbd className="px-2 py-0.5 text-xs font-mono bg-muted border border-border rounded">Tab</kbd> to start.</p>
+      <main className="flex-1 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10 sm:py-16 lg:py-20">
+        <div className="text-center mb-10 sm:mb-14">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-3">Test Your Speed</h2>
+          <p className="text-muted-foreground text-lg sm:text-xl">See how fast you can type. Press <kbd className="px-2.5 py-1 text-sm font-mono bg-muted border border-border rounded">Tab</kbd> to start.</p>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
           {([15, 30, 60] as const).map((d) => (
             <button
               key={d}
               onClick={() => { setDuration(d); if (gameState === 'idle') setTimeLeft(d) }}
               disabled={gameState === 'playing'}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors border ${
+              className={`px-6 py-3 text-base font-medium rounded-lg transition-colors border ${
                 duration === d
                   ? 'bg-primary text-primary-foreground border-primary'
                   : 'bg-background text-foreground border-border hover:bg-muted'
@@ -263,7 +263,7 @@ function App() {
           <button
             onClick={startGame}
             disabled={gameState === 'playing'}
-            className={`px-6 py-2 text-sm font-medium rounded-md transition-opacity bg-primary text-primary-foreground ${
+            className={`px-8 py-3 text-base font-medium rounded-lg transition-opacity bg-primary text-primary-foreground ${
               gameState === 'playing' ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
             }`}
           >
@@ -272,14 +272,14 @@ function App() {
         </div>
 
         {gameState === 'playing' && (
-          <div className="text-center mb-6">
-            <div className="text-5xl sm:text-6xl font-bold font-mono text-primary tabular-nums">{timeLeft}</div>
-            <div className="text-sm text-muted-foreground mt-1">seconds remaining</div>
+          <div className="text-center mb-8">
+            <div className="text-7xl sm:text-8xl lg:text-9xl font-bold font-mono text-primary tabular-nums">{timeLeft}</div>
+            <div className="text-base text-muted-foreground mt-2">seconds remaining</div>
           </div>
         )}
 
-        <div className="border border-border rounded-lg bg-card p-4 sm:p-6 mb-8 shadow-sm">
-          <div className="font-mono text-base sm:text-lg leading-relaxed tracking-wide select-none">
+        <div className="border border-border rounded-xl bg-card p-6 sm:p-8 lg:p-10 mb-10 shadow-sm">
+          <div className="font-mono text-xl sm:text-2xl lg:text-3xl leading-relaxed tracking-wide select-none">
             {text.split('').map((char, i) => (
               <span key={i} className={`${getCharClass(i)} transition-colors duration-75`}>
                 {char}
@@ -293,7 +293,7 @@ function App() {
             onChange={handleInput}
             disabled={gameState !== 'playing'}
             placeholder={gameState === 'playing' ? 'Start typing...' : 'Press Start or Tab to begin'}
-            className="w-full mt-4 px-4 py-3 text-base font-mono bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-6 px-6 py-4 text-xl font-mono bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -302,35 +302,35 @@ function App() {
         </div>
 
         {gameState === 'finished' && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <div className="border border-border rounded-lg bg-card p-4 text-center shadow-sm">
-              <div className="text-3xl font-bold text-primary">{stats.wpm}</div>
-              <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">WPM</div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+            <div className="border border-border rounded-xl bg-card p-6 text-center shadow-sm">
+              <div className="text-4xl sm:text-5xl font-bold text-primary">{stats.wpm}</div>
+              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider">WPM</div>
             </div>
-            <div className="border border-border rounded-lg bg-card p-4 text-center shadow-sm">
-              <div className="text-3xl font-bold text-foreground">{stats.accuracy}%</div>
-              <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">Accuracy</div>
+            <div className="border border-border rounded-xl bg-card p-6 text-center shadow-sm">
+              <div className="text-4xl sm:text-5xl font-bold text-foreground">{stats.accuracy}%</div>
+              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider">Accuracy</div>
             </div>
-            <div className="border border-border rounded-lg bg-card p-4 text-center shadow-sm">
-              <div className="text-3xl font-bold text-green-500">{stats.correctChars}</div>
-              <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">Correct</div>
+            <div className="border border-border rounded-xl bg-card p-6 text-center shadow-sm">
+              <div className="text-4xl sm:text-5xl font-bold text-green-500">{stats.correctChars}</div>
+              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider">Correct</div>
             </div>
-            <div className="border border-border rounded-lg bg-card p-4 text-center shadow-sm">
-              <div className="text-3xl font-bold text-destructive">{stats.incorrectChars}</div>
-              <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">Errors</div>
+            <div className="border border-border rounded-xl bg-card p-6 text-center shadow-sm">
+              <div className="text-4xl sm:text-5xl font-bold text-destructive">{stats.incorrectChars}</div>
+              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider">Errors</div>
             </div>
           </div>
         )}
 
         {bestScore > 0 && (
-          <div className="text-center p-4 border border-border rounded-lg bg-muted">
-            <span className="text-sm text-muted-foreground">Best Score: </span>
-            <span className="text-lg font-bold text-primary">{bestScore} WPM</span>
+          <div className="text-center p-6 border border-border rounded-xl bg-muted">
+            <span className="text-base text-muted-foreground">Best Score: </span>
+            <span className="text-2xl font-bold text-primary">{bestScore} WPM</span>
           </div>
         )}
       </main>
 
-      <footer className="text-center py-6 border-t border-border text-sm text-muted-foreground">
+      <footer className="text-center py-8 border-t border-border text-sm text-muted-foreground">
         <p>Built by <a href="https://github.com/parithosh-varma" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Parithosh Varma</a></p>
       </footer>
     </div>
