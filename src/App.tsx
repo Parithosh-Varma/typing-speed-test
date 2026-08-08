@@ -61,17 +61,6 @@ const WORDS = [
   'hit', 'section', 'record', 'ship', 'area', 'lift', 'cat', 'select',
   'rock', 'wrong', 'gray', 'bit', 'face', 'elect', 'wish', 'matter',
   'class', 'fire', 'south', 'solution', 'sheet', 'believe', 'finger',
-  'universe', 'instantiate', 'type', 'program', 'question', 'change',
-  'field', 'error', 'pay', 'result', 'total', 'know', 'value',
-  'system', 'report', 'thing', 'local', 'sound', 'function', 'return',
-  'component', 'render', 'state', 'props', 'hook', 'effect', 'ref',
-  'context', 'memo', 'callback', 'async', 'await', 'promise',
-  'array', 'object', 'string', 'number', 'boolean', 'null', 'undefined',
-  'import', 'export', 'default', 'module', 'class', 'interface',
-  'type', 'enum', 'const', 'let', 'var', 'function', 'return',
-  'if', 'else', 'switch', 'case', 'break', 'continue', 'for',
-  'while', 'do', 'try', 'catch', 'finally', 'throw', 'new', 'delete',
-  'typeof', 'instanceof', 'void', 'this', 'super', 'extends',
 ]
 
 type GameState = 'idle' | 'playing' | 'finished'
@@ -141,7 +130,7 @@ function App() {
     setInput('')
     setText(generateText())
     startTimeRef.current = Date.now()
-    inputRef.current?.focus()
+    setTimeout(() => inputRef.current?.focus(), 50)
   }
 
   const finishGame = () => {
@@ -202,15 +191,28 @@ function App() {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
   }
 
-  const getCharClass = (index: number) => {
-    if (index >= input.length) return 'text-muted-foreground'
-    if (input[index] === text[index]) return 'text-primary font-semibold'
-    return 'text-destructive font-semibold underline'
+  const progress = gameState === 'playing' ? ((duration - timeLeft) / duration) * 100 : gameState === 'finished' ? 100 : 0
+  const circumference = 2 * Math.PI * 54
+  const strokeDashoffset = circumference - (progress / 100) * circumference
+
+  const words = text.split(' ')
+  const typedWords = input.split(' ')
+
+  const getWordStatus = (wordIndex: number) => {
+    if (wordIndex >= typedWords.length) return 'pending'
+    if (typedWords[wordIndex] === words[wordIndex]) return 'correct'
+    return 'incorrect'
+  }
+
+  const getCurrentWordIndex = () => {
+    const typed = input.split(' ')
+    if (input.endsWith(' ') || input.length === 0) return typed.length
+    return typed.length - 1
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col" onKeyDown={handleKeyDown}>
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 sm:px-8 py-4 border-b border-border bg-card">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 sm:px-8 py-4 border-b border-border bg-card/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-full object-cover border border-border shadow-sm" />
           <h1 className="text-lg font-semibold tracking-tight">Typing Speed Test</h1>
@@ -239,9 +241,9 @@ function App() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-10 sm:py-16 lg:py-20">
+      <main className="flex-1 w-full max-w-5xl mx-auto px-6 sm:px-8 py-10 sm:py-14">
         <div className="text-center mb-10 sm:mb-14">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-3">Test Your Speed</h2>
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-3">Test Your Speed</h2>
           <p className="text-muted-foreground text-lg sm:text-xl">See how fast you can type. Press <kbd className="px-2.5 py-1 text-sm font-mono bg-muted border border-border rounded">Tab</kbd> to start.</p>
         </div>
 
@@ -251,10 +253,10 @@ function App() {
               key={d}
               onClick={() => { setDuration(d); if (gameState === 'idle') setTimeLeft(d) }}
               disabled={gameState === 'playing'}
-              className={`px-6 py-3 text-base font-medium rounded-lg transition-colors border ${
+              className={`px-6 py-3 text-base font-medium rounded-lg transition-all duration-200 border ${
                 duration === d
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-background text-foreground border-border hover:bg-muted'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/25'
+                  : 'bg-background text-foreground border-border hover:bg-muted hover:border-muted-foreground/20'
               } ${gameState === 'playing' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {d}s
@@ -263,8 +265,8 @@ function App() {
           <button
             onClick={startGame}
             disabled={gameState === 'playing'}
-            className={`px-8 py-3 text-base font-medium rounded-lg transition-opacity bg-primary text-primary-foreground ${
-              gameState === 'playing' ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+            className={`px-8 py-3 text-base font-semibold rounded-lg transition-all duration-200 bg-primary text-primary-foreground shadow-md shadow-primary/25 ${
+              gameState === 'playing' ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90 hover:shadow-lg hover:shadow-primary/30 active:scale-95'
             }`}
           >
             {gameState === 'finished' ? 'Restart' : 'Start'}
@@ -272,60 +274,143 @@ function App() {
         </div>
 
         {gameState === 'playing' && (
-          <div className="text-center mb-8">
-            <div className="text-7xl sm:text-8xl lg:text-9xl font-bold font-mono text-primary tabular-nums">{timeLeft}</div>
-            <div className="text-base text-muted-foreground mt-2">seconds remaining</div>
+          <div className="flex justify-center mb-10">
+            <div className="relative">
+              <svg className="w-32 h-32 sm:w-40 sm:h-40 transform -rotate-90" viewBox="0 0 120 120">
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="54"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  className="text-muted/50"
+                />
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="54"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  className="text-primary transition-all duration-1000 ease-linear"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-4xl sm:text-5xl font-bold font-mono text-foreground tabular-nums">{timeLeft}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground mt-1">seconds</span>
+              </div>
+            </div>
           </div>
         )}
 
-        <div className="border border-border rounded-xl bg-card p-6 sm:p-8 lg:p-10 mb-10 shadow-sm">
-          <div className="font-mono text-xl sm:text-2xl lg:text-3xl leading-relaxed tracking-wide select-none">
-            {text.split('').map((char, i) => (
-              <span key={i} className={`${getCharClass(i)} transition-colors duration-75`}>
-                {char}
-              </span>
-            ))}
+        {gameState === 'idle' && (
+          <div className="flex justify-center mb-10">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-dashed border-muted-foreground/20 flex items-center justify-center">
+              <div className="text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground/40 mx-auto mb-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <span className="text-xs text-muted-foreground/60">Press Tab</span>
+              </div>
+            </div>
           </div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={handleInput}
-            disabled={gameState !== 'playing'}
-            placeholder={gameState === 'playing' ? 'Start typing...' : 'Press Start or Tab to begin'}
-            className="w-full mt-6 px-6 py-4 text-xl font-mono bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-          />
+        )}
+
+        <div className="border border-border rounded-2xl bg-card p-6 sm:p-8 lg:p-10 mb-10 shadow-sm">
+          <div className="font-mono text-lg sm:text-xl lg:text-2xl leading-loose tracking-wide select-none min-h-[8rem]">
+            {words.map((word, wordIndex) => {
+              const status = getWordStatus(wordIndex)
+              const isCurrent = wordIndex === getCurrentWordIndex()
+              
+              return (
+                <span key={wordIndex} className="inline-block mr-3 mb-2">
+                  {word.split('').map((char, charIndex) => {
+                    const globalIndex = text.indexOf(word) + charIndex
+                    let charClass = 'text-muted-foreground/60'
+                    
+                    if (status === 'correct') {
+                      charClass = 'text-primary'
+                    } else if (status === 'incorrect') {
+                      charClass = 'text-destructive'
+                    } else if (isCurrent && globalIndex === input.length) {
+                      charClass = 'text-foreground border-b-2 border-primary animate-pulse'
+                    }
+                    
+                    return (
+                      <span key={charIndex} className={`${charClass} transition-colors duration-100`}>
+                        {char}
+                      </span>
+                    )
+                  })}
+                </span>
+              )
+            })}
+          </div>
+          
+          <div className="relative mt-6">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={handleInput}
+              disabled={gameState !== 'playing'}
+              placeholder={gameState === 'playing' ? 'Start typing...' : 'Press Start or Tab to begin'}
+              className="w-full px-6 py-4 text-lg font-mono bg-background border-2 border-input rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+            />
+            {gameState === 'playing' && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <span className="text-sm font-mono text-muted-foreground">
+                  {input.length}/{text.length}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {gameState === 'finished' && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
-            <div className="border border-border rounded-xl bg-card p-6 text-center shadow-sm">
+            <div className="border border-border rounded-2xl bg-card p-6 sm:p-8 text-center shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-primary"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+              </div>
               <div className="text-4xl sm:text-5xl font-bold text-primary">{stats.wpm}</div>
-              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider">WPM</div>
+              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider font-medium">WPM</div>
             </div>
-            <div className="border border-border rounded-xl bg-card p-6 text-center shadow-sm">
+            <div className="border border-border rounded-2xl bg-card p-6 sm:p-8 text-center shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-foreground"><path d="M20 6 9 17l-5-5"/></svg>
+              </div>
               <div className="text-4xl sm:text-5xl font-bold text-foreground">{stats.accuracy}%</div>
-              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider">Accuracy</div>
+              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider font-medium">Accuracy</div>
             </div>
-            <div className="border border-border rounded-xl bg-card p-6 text-center shadow-sm">
+            <div className="border border-border rounded-2xl bg-card p-6 sm:p-8 text-center shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-green-500"><path d="m5 12 5 5L20 7"/></svg>
+              </div>
               <div className="text-4xl sm:text-5xl font-bold text-green-500">{stats.correctChars}</div>
-              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider">Correct</div>
+              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider font-medium">Correct</div>
             </div>
-            <div className="border border-border rounded-xl bg-card p-6 text-center shadow-sm">
+            <div className="border border-border rounded-2xl bg-card p-6 sm:p-8 text-center shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-destructive"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </div>
               <div className="text-4xl sm:text-5xl font-bold text-destructive">{stats.incorrectChars}</div>
-              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider">Errors</div>
+              <div className="text-sm text-muted-foreground mt-2 uppercase tracking-wider font-medium">Errors</div>
             </div>
           </div>
         )}
 
         {bestScore > 0 && (
-          <div className="text-center p-6 border border-border rounded-xl bg-muted">
-            <span className="text-base text-muted-foreground">Best Score: </span>
-            <span className="text-2xl font-bold text-primary">{bestScore} WPM</span>
+          <div className="flex items-center justify-center gap-3 p-5 border border-border rounded-2xl bg-muted/50">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-primary"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span className="text-base text-muted-foreground">Personal Best: </span>
+            <span className="text-xl font-bold text-primary">{bestScore} WPM</span>
           </div>
         )}
       </main>
