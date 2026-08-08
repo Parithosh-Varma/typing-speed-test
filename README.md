@@ -9,15 +9,16 @@
 </p>
 
 <p align="center">
-  <a href="https://typing-speed-test.netlify.app">
-    <img src="https://img.shields.io/badge/🌐_Live-Netlify-00C7B7?style=flat-square&logo=netlify&logoColor=white" alt="Live Demo" />
-  </a>
   <a href="https://github.com/parithosh-varma/typing-speed-test">
     <img src="https://img.shields.io/badge/📂_Source-GitHub-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub Repo" />
   </a>
   <img src="https://img.shields.io/badge/⚡_Stack-React/TypeScript-61DAFB?style=flat-square&logo=react&logoColor=black" alt="Tech Stack" />
   <img src="https://img.shields.io/badge/🎨_Design-Modern_Minimal-6366F1?style=flat-square" alt="Design System" />
 </p>
+
+---
+
+**This is the live demo of the tool:** https://typing-speed-test-871.netlify.app
 
 ---
 
