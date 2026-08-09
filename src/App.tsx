@@ -230,9 +230,9 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300" onKeyDown={handleKeyDown}>
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center transition-colors duration-300" onKeyDown={handleKeyDown}>
       {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 sm:px-8 py-4 border-b border-border bg-card/60 backdrop-blur-md">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 sm:px-8 py-4 border-b border-border bg-card/60 backdrop-blur-md w-full">
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-full object-cover border border-border shadow-sm" />
           <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">Typing Speed Test</h1>
@@ -262,7 +262,7 @@ function App() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-6 sm:px-8 py-12 sm:py-20 flex flex-col justify-center">
+      <main className="flex-1 w-full max-w-5xl px-6 sm:px-8 py-12 sm:py-20 flex flex-col justify-center">
         {gameState !== 'finished' ? (
           <>
             {/* Header / Config Bar */}
@@ -371,7 +371,7 @@ function App() {
           </>
         ) : (
           /* Finished Dashboard */
-          <div className="w-full max-w-4xl mx-auto border border-border rounded-3xl bg-card p-8 sm:p-12 shadow-xl animate-[fadeIn_0.4s_ease-out]">
+          <div className="w-full max-w-4xl border border-border rounded-3xl bg-card p-8 sm:p-12 shadow-xl animate-[fadeIn_0.4s_ease-out]">
             <div className="text-center mb-10">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border border-primary/20 text-primary mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-8 h-8"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34"/><path d="M12 2a4 4 0 0 1 4 4v7a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4Z"/></svg>
@@ -423,7 +423,7 @@ function App() {
         )}
       </main>
 
-      <footer className="text-center py-8 border-t border-border text-sm text-muted-foreground">
+      <footer className="w-full text-center py-8 border-t border-border text-sm text-muted-foreground">
         <p>Built with ❤️ by <a href="https://github.com/parithosh-varma" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">Parithosh Varma</a></p>
       </footer>
     </div>
